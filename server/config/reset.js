@@ -28,32 +28,32 @@ const createTripsTable = async () => {
     } catch (err) {
         console.error('⚠️ error creating trips table', err)
     }
+}
 
-    const seedTripsTable = async () => {
-        await createTripsTable()
-        tripsData.forEach((trip) => {
-            const insertQuery = {
-                text: 'INSERT INTO trips (title, description, img_url, num_days, start_date, end_date, total_cost) VALUES ($1, $2, $3, $4, $5, $6, $7)'
+const seedTripsTable = async () => {
+    await createTripsTable()
+    tripsData.forEach((trip) => {
+        const insertQuery = {
+            text: 'INSERT INTO trips (title, description, img_url, num_days, start_date, end_date, total_cost) VALUES ($1, $2, $3, $4, $5, $6, $7)'
+        }
+        const values = [
+            trip.title,
+            trip.description,
+            trip.img_url,
+            trip.num_days,
+            trip.start_date,
+            trip.end_date,
+            trip.total_cost
+        ]
+        pool.query(insertQuery, values, (err, res) => {
+            if (err) {
+                console.error('⚠️ error inserting trip', err)
+                return
             }
-            const values = [
-                trip.title,
-                trip.description,
-                trip.img_url,
-                trip.num_days,
-                trip.start_date,
-                trip.end_date,
-                trip.total_cost
-            ]
-            pool.query(insertQuery, values, (err, res) => {
-                if (err) {
-                    console.error('⚠️ error inserting trip', err)
-                    return
-                }
-            
-                console.log(`✅ ${trip.title} added successfully`)
-            })
+        
+            console.log(`✅ ${trip.title} added successfully`)
         })
-    }
+    })
 }
 
 seedTripsTable()
