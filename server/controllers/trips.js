@@ -32,13 +32,52 @@ const getTrip = async (req, res) => {
         res.status(200).json(results.rows[0])
 
     } catch (error) {
-        res.status(409).json( { error: error.message } )
+      res.status(409).json( { error: error.message } )
+      console.log('Unable to get trip')
+      console.log('Error:', error.message)
     }
 
 } 
 
-export default {
+
+const updateTrip = async (request, response) => {
+    try {
+      const { title, description, img_url, num_days, start_date, end_date, total_cost } = req.body
+      const id = parseInt(req.params.id)
+  
+      const results = await pool.query('UPDATE trips SET title = $1, description = $2, img_url = $3, num_days = $4, start_date = $5, end_date = $6, total_cost= $7 WHERE id = $8',
+        [title, description, img_url, num_days, start_date, end_date, total_cost, id]
+      )
+  
+      res.status(200).json(results.rows);
+    }
+    catch(error){
+      res.status(409).json( { error: error.message } )
+    }
+  }
+
+
+  const deleteTrip = async (req, res) => {
+    const id = parseInt(req.params.id)
+  
+    try {
+      const activity_deletion = await pool.query('DELETE FROM activities WHERE trip_id = $1',
+        [id]
+      )
+  
+      const results = await pool.query('DELETE FROM trips WHERE id = $1', [id])
+      res.status(200).json(results.rows)
+    }
+    catch(error) {
+      res.status(409).json( { error: error.message } )
+    }
+      
+  }
+
+  export default {
     createTrip,
     getTrips,
-    getTrip
+    getTrip,
+    updateTrip,
+    deleteTrip
   }
